@@ -13,13 +13,16 @@ namespace Calc2
                               "2 - Show history\n" +
                               "3 - Exit application");
         }
-        static decimal Calculate(List<string> stringList)
+        static string Calculate(List<string> stringList)
         {
             //List of numbers
             List<decimal> numList = new();
 
             //List of operators
-            List<char> opList = new();            
+            List<char> opList = new();
+
+            //If something went wrong, for example if the user wrote too many operators lik 4 //4. Display error message and return 0.
+            
 
             //Converts the numbers in stringList to doubles, and operators to chars
             foreach (string s in stringList)
@@ -28,12 +31,20 @@ namespace Calc2
                 {
                     numList.Add(Convert.ToDecimal(s));
                 }
-                catch
+                catch (FormatException)
                 {
-                    opList.Add(Convert.ToChar(s));
+                    try
+                    {
+                        opList.Add(Convert.ToChar(s));
+                    }
+                    catch
+                    {
+                        return "Invalid input. please try again";
+                    }
                 }
             }
 
+            
             //Setting the result to the first number of numList
             decimal result = numList[0];
 
@@ -57,7 +68,7 @@ namespace Calc2
                         break;
                 }
             }
-            return result;
+            return ListToString(stringList, result);
 
 
         }//This method does the calculations
@@ -76,10 +87,12 @@ namespace Calc2
         }
         static char[] GetUserInput()
         {
+            Console.Clear();
+            //Ask user for a problem to calculate
             Console.Write("Enter problem to calculate: ");
             string input = Console.ReadLine();
 
-            //Removing potential spaces and replacing commas with dots.
+            //Removing potential spaces and replacing dots with commas.
             input = input.Replace(" ", "").Replace(".", ",");
 
             char[] charArray = input.ToCharArray();
@@ -122,8 +135,10 @@ namespace Calc2
                 //If c is an operator, add current num to list, reset num back to empty, and add the operator to list.
                 else if (op.Contains(c))
                 {
-                    list.Add(numString);
-                    numString = "";
+                    //I addes this if-statement to make sure empty strings wasnt being added to the list if user entered something like 4//4.
+                    if(numString !=String.Empty)list.Add(numString);
+                    
+                    numString = string.Empty;
                     list.Add(c.ToString());
                 }
                 else
@@ -154,8 +169,9 @@ namespace Calc2
         {
             //We will be every calculation as a string eg. 1 + 2 + 3 = 6
             List<string> calcHistory = new();
-            
-            
+            List<string> stringList = new();
+
+
             while (true)
             {
                 Console.Clear();
@@ -165,17 +181,17 @@ namespace Calc2
                 switch (keyPress.Key)
                 {                    
                     case ConsoleKey.D1:
-                        
+                        stringList.Clear();
                         //Creating a string to store the entire calcultion + result in.
                         string resultString = "";
                         //Save the user input as an array of typ char.
                         char[] chars = GetUserInput();
                         //Convert to char array to a list with valid numbers and operators
-                        List<string> stringList = ArrayToList(chars);
+                        stringList = ArrayToList(chars);
                         //Call "Calculate" with the list of numbers and operators. Store the result in result.
-                        decimal result =Calculate(stringList);
-                        
-                        resultString = ListToString(stringList, result);
+                        //decimal result =Calculate(stringList);
+
+                        resultString = Calculate(stringList);
                         
                         Console.WriteLine(resultString);
                         calcHistory.Add(resultString);
