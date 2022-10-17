@@ -61,8 +61,33 @@ namespace Calc2
 
 
         }//This method does the calculations
+        static void DisplayResultHistory(List<string> list)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Blue;
+            foreach (string s in list)
+            {
+                Console.WriteLine(s);
+            }
+            Console.ForegroundColor = ConsoleColor.White;
 
-        static List<string> InputToList(char[] charArray)
+            Console.WriteLine("Press any key to return to the menu..");
+            Console.ReadKey(true);
+        }
+        static char[] GetUserInput()
+        {
+            Console.Write("Enter problem to calculate: ");
+            string input = Console.ReadLine();
+
+            //Removing potential spaces and replacing commas with dots.
+            input = input.Replace(" ", "").Replace(".", ",");
+
+            char[] charArray = input.ToCharArray();
+            string num = "";            
+
+            return charArray;
+        }
+        static List<string> ArrayToList(char[] charArray)
         {
             //List to hold numbers and operators in the right order (N OP N OP N OP N etc)
             List<string> list = new List<string>();
@@ -115,22 +140,56 @@ namespace Calc2
             return list;
         }//This method take the input as a char[] and converts it to a
          //list of numbers and operators
+        static string ListToString(List<string> list, decimal result)
+        {
+            string resultString = "";
+            foreach (string str in list)
+            {
+                resultString += str + " ";
+            }
+            resultString += $"= {result}";
+            return resultString;
+        }
         static void Main(string[] args)
         {
-            PrintMainMenu();
+            //We will be every calculation as a string eg. 1 + 2 + 3 = 6
+            List<string> calcHistory = new();
+            
+            
             while (true)
-            { 
-            Console.Write("Enter problem to calculate: ");
-            string input = Console.ReadLine();
+            {
+                Console.Clear();
+                PrintMainMenu();
+                var keyPress = Console.ReadKey(true);
 
-            //Removing potential spaces and replacing commas with dots.
-            input = input.Replace(" ", "").Replace(".", ",");
+                switch (keyPress.Key)
+                {                    
+                    case ConsoleKey.D1:
+                        
+                        //Creating a string to store the entire calcultion + result in.
+                        string resultString = "";
+                        //Save the user input as an array of typ char.
+                        char[] chars = GetUserInput();
+                        //Convert to char array to a list with valid numbers and operators
+                        List<string> stringList = ArrayToList(chars);
+                        //Call "Calculate" with the list of numbers and operators. Store the result in result.
+                        decimal result =Calculate(stringList);
+                        
+                        resultString = ListToString(stringList, result);
+                        
+                        Console.WriteLine(resultString);
+                        calcHistory.Add(resultString);
+                        Console.ReadKey();
+                        break;
+                        case ConsoleKey.D2: DisplayResultHistory(calcHistory);
+                        break;
+                    case ConsoleKey.D3: Environment.Exit(0);
+                        break;
 
-            char[] charArray = input.ToCharArray();
-            string num = "";
-            List<string> list = InputToList(charArray);
-
-            Console.WriteLine(Calculate(list));
+                }
+                
+                
+                
             }
 
 
