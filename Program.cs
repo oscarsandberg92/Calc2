@@ -5,6 +5,14 @@ namespace Calc2
 {
     internal class Program
     {  
+
+        static void PrintMainMenu()
+        {
+            Console.WriteLine("Main menu.\n" +
+                              "1 - Calculate\n" +
+                              "2 - Show history\n" +
+                              "3 - Exit application");
+        }
         static decimal Calculate(List<string> stringList)
         {
             //List of numbers
@@ -109,6 +117,7 @@ namespace Calc2
          //list of numbers and operators
         static void Main(string[] args)
         {
+            PrintMainMenu();
             while (true)
             { 
             Console.Write("Enter problem to calculate: ");
