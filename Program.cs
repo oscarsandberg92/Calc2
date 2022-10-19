@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Calc2
 {
@@ -44,7 +45,7 @@ namespace Calc2
                 }
             }
 
-            
+            if (numList.Count != opList.Count + 1) return "Invalid input.";
             //Setting the result to the first number of numList
             decimal result = numList[0];
 
@@ -62,7 +63,14 @@ namespace Calc2
                         result *= numList[i + 1];
                         break;
                     case '/':
-                        result /= numList[i + 1];
+                        try
+                        {
+                            result /= numList[i + 1];
+                        }
+                        catch (DivideByZeroException)
+                        {
+                            return "Divide by zero attempted.";
+                        }
                         break;
                         default:
                         break;
@@ -86,7 +94,7 @@ namespace Calc2
             Console.ReadKey(true);
         }
         static char[] GetUserInput()
-        {
+        {           
             Console.Clear();
             //Ask user for a problem to calculate
             Console.Write("Enter problem to calculate: ");
@@ -96,7 +104,6 @@ namespace Calc2
             input = input.Replace(" ", "").Replace(".", ",");
 
             char[] charArray = input.ToCharArray();
-            string num = "";            
 
             return charArray;
         }
@@ -144,7 +151,7 @@ namespace Calc2
                 else
                 //If something is wrong with the input, display this message. Also sets the list to empty and return.
                 {
-                    Console.WriteLine("Error. Not valid input");
+                    //Console.WriteLine("Error. Not valid input");
                     list.Clear();
                     return list;
                 }
@@ -155,7 +162,7 @@ namespace Calc2
             return list;
         }//This method take the input as a char[] and converts it to a
          //list of numbers and operators
-        static string ListToString(List<string> list, decimal result)
+        static string ListToString(List<string> list, decimal result)//Formatting the result string
         {
             string resultString = "";
             foreach (string str in list)
@@ -195,6 +202,8 @@ namespace Calc2
                         
                         Console.WriteLine(resultString);
                         calcHistory.Add(resultString);
+
+                        Console.WriteLine("\n\nPress any key to continue..");
                         Console.ReadKey();
                         break;
                         case ConsoleKey.D2: DisplayResultHistory(calcHistory);
