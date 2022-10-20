@@ -1,18 +1,27 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace Calc2
 {
+    /*TODO:
+     * Få kontroll över felmeddelande
+     * Om historiken är tom, skriv ut tex "You didn't make any calculations yet!
+     * Snygga till allt visuellt
+     * Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
+     *
+     *
+     */
     internal class Program
     {  
-
         static void PrintMainMenu()
         {
             Console.WriteLine("Main menu.\n" +
-                              "1 - Calculate\n" +
-                              "2 - Show history\n" +
-                              "3 - Exit application");
+                              "Calculate        Press 1\n" +
+                              "Show history     Press 2\n" +
+                              "\n" +
+                              "Exit application Press ESC");
         }
         static string Calculate(List<string> stringList)
         {
@@ -20,10 +29,7 @@ namespace Calc2
             List<decimal> numList = new();
 
             //List of operators
-            List<char> opList = new();
-
-            //If something went wrong, for example if the user wrote too many operators lik 4 //4. Display error message and return 0.
-            
+            List<char> opList = new();            
 
             //Converts the numbers in stringList to doubles, and operators to chars
             foreach (string s in stringList)
@@ -40,15 +46,17 @@ namespace Calc2
                     }
                     catch
                     {
-                        return "Invalid input. please try again";
+                        return "Error, invalid input. please try again";
                     }
                 }
             }
 
-            if (numList.Count != opList.Count + 1) return "Invalid input.";
+            //Return "Invalid input" if for some reason numList.Count == opList.Count + are not true.
+            
+            if (numList.Count != opList.Count + 1) return "Error,invalid input.";
             //Setting the result to the first number of numList
             decimal result = numList[0];
-
+         
             //Looping through the operators list and performing calculations based on operator
             for (int i = 0;i<opList.Count;i++)
             {
@@ -69,7 +77,7 @@ namespace Calc2
                         }
                         catch (DivideByZeroException)
                         {
-                            return "Divide by zero attempted.";
+                            return "Error. Divide by zero attempted.";
                         }
                         break;
                         default:
@@ -83,14 +91,21 @@ namespace Calc2
         static void DisplayResultHistory(List<string> list)
         {
             Console.Clear();
-            Console.ForegroundColor = ConsoleColor.Blue;
-            foreach (string s in list)
+            if (list.Count == 0)
             {
-                Console.WriteLine(s);
+                Console.WriteLine("You didn't make any calculations yet.");
             }
-            Console.ForegroundColor = ConsoleColor.White;
+            else
+            {
+                Console.WriteLine("This is your recent history:\n");
+                
+                foreach (string s in list)
+                {
+                    WriteWithColor(s, ConsoleColor.Blue);
+                }                
+            }
 
-            Console.WriteLine("Press any key to return to the menu..");
+            WriteWithColor("\n\nPress any key to return to the menu..", ConsoleColor.Yellow);
             Console.ReadKey(true);
         }
         static char[] GetUserInput()
@@ -169,8 +184,18 @@ namespace Calc2
             {
                 resultString += str + " ";
             }
+            
             resultString += $"= {result}";
+            
             return resultString;
+        }
+
+        static void WriteWithColor(string text, ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+            Console.WriteLine(text);
+            Console.ForegroundColor = ConsoleColor.Gray;
+
         }
         static void Main(string[] args)
         {
@@ -178,7 +203,7 @@ namespace Calc2
             List<string> calcHistory = new();
             List<string> stringList = new();
 
-
+            //The program will keep running until the user decides to exit the program.
             while (true)
             {
                 Console.Clear();
@@ -193,59 +218,36 @@ namespace Calc2
                         string resultString = "";
                         //Save the user input as an array of typ char.
                         char[] chars = GetUserInput();
+                        
                         //Convert to char array to a list with valid numbers and operators
                         stringList = ArrayToList(chars);
                         //Call "Calculate" with the list of numbers and operators. Store the result in result.
-                        //decimal result =Calculate(stringList);
+                        
 
                         resultString = Calculate(stringList);
                         
-                        Console.WriteLine(resultString);
-                        calcHistory.Add(resultString);
+                        //Console.WriteLine(resultString);
 
-                        Console.WriteLine("\n\nPress any key to continue..");
+                        if (!resultString.Contains("Error"))
+                        {
+                            WriteWithColor(resultString, ConsoleColor.Gray);
+                            calcHistory.Add(resultString);
+                        }
+                        else
+                        {
+                            WriteWithColor(resultString, ConsoleColor.Red);
+                        }
+
+                        WriteWithColor("\n\nPress any key to continue..", ConsoleColor.Yellow);
                         Console.ReadKey();
                         break;
                         case ConsoleKey.D2: DisplayResultHistory(calcHistory);
                         break;
-                    case ConsoleKey.D3: Environment.Exit(0);
+                    case ConsoleKey.Escape: Environment.Exit(0);
                         break;
 
-                }
-                
-                
-                
+                }                                               
             }
-
-
-
-
-
-            //------------------------------
-            /*
-            foreach (string s in list)
-            {
-                Console.WriteLine(s);
-            }
-            */
-            /*
-            foreach (string s in list)
-            {
-                try
-                {
-                    double number = Convert.ToDouble(s);
-                    Console.WriteLine($" Added {number} to numList");
-                }
-                catch
-                {
-                    char ope = Convert.ToChar(s);
-                    Console.WriteLine($"Added {ope} to opList");
-                }
-            }
-            Console.ReadKey();
-            */
-
-
         }
     }
 }
