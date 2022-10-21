@@ -6,10 +6,10 @@ using System.Net;
 namespace Calc2
 {
     /*TODO:
-     * Få kontroll över felmeddelande
-     * Om historiken är tom, skriv ut tex "You didn't make any calculations yet!
-     * Snygga till allt visuellt
-     * Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
+     * [ ]Få kontroll över felmeddelande
+     * [X]Om historiken är tom, skriv ut tex "You didn't make any calculations yet! 
+     * [ ]Snygga till allt visuellt
+     * [ ]Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
      *
      *
      */
@@ -17,11 +17,14 @@ namespace Calc2
     {  
         static void PrintMainMenu()
         {
-            Console.WriteLine("Main menu.\n" +
-                              "Calculate        Press 1\n" +
-                              "Show history     Press 2\n" +
+            Console.WriteLine("|        Main menu.       |\n" +
+                              "---------------------------\n" +
+                              "Calculate          Press 1\n" +
+                              "Show history       Press 2\n" +
                               "\n" +
-                              "Exit application Press ESC");
+                              "----------------------------\n");
+            WriteWithColor("Exit program       Press ESC", ConsoleColor.Yellow);
+                              
         }
         static string Calculate(List<string> stringList)
         {
@@ -34,6 +37,7 @@ namespace Calc2
             //Converts the numbers in stringList to doubles, and operators to chars
             foreach (string s in stringList)
             {
+                
                 try
                 {
                     numList.Add(Convert.ToDecimal(s));
@@ -165,8 +169,7 @@ namespace Calc2
                 }
                 else
                 //If something is wrong with the input, display this message. Also sets the list to empty and return.
-                {
-                    //Console.WriteLine("Error. Not valid input");
+                {                    
                     list.Clear();
                     return list;
                 }
@@ -199,6 +202,8 @@ namespace Calc2
         }
         static void Main(string[] args)
         {
+            Console.CursorVisible = false;
+            
             //We will be every calculation as a string eg. 1 + 2 + 3 = 6
             List<string> calcHistory = new();
             List<string> stringList = new();
