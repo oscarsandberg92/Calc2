@@ -26,53 +26,55 @@ namespace Calc2
      * [ ]Snygga till allt visuellt
      * [ ]Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
      * [X] Gör en välkomstsida
-     *
+     * [ ]Mellanslag mellan // och kommentar
+     * [ ]Fixa så att kommat försvinner om man tex skriver 1, + 2
+     * [ ]Kolla om numpadden funkar i menyn
+     * [ ]Git från kommandoraden, kika på det!
      */
     internal class Program
-    {  
+    {
         //----Methods-----
-        
+
         static string Calculate(List<string> stringList)
         {
             //List of numbers
             List<decimal> numList = new();
 
             //List of operators
-            List<char> opList = new();            
+            List<char> opList = new();
 
             //Converts the numbers in stringList to doubles, and operators to chars
             foreach (string s in stringList)
             {
-                
+
                 try
                 {
                     numList.Add(Convert.ToDecimal(s));
                 }
                 catch (FormatException)
                 {
-                    try
-                    {
-                        opList.Add(Convert.ToChar(s));
-                    }
-                    catch
-                    {
-                        return "Error. Invalid input";
-                    }
+                    opList.Add(Convert.ToChar(s));
+                }
+                catch
+                {
+                    return "Error. Invalid input";
                 }
             }
 
             //Return "Invalid input" if for some reason numList.Count == opList.Count + are not true.
-            
+
             if (numList.Count != opList.Count + 1) return "Error. Invalid input.";
+            
             //Setting the result to the first number of numList
             decimal result = numList[0];
-         
+
             //Looping through the operators list and performing calculations based on operator
-            for (int i = 0;i<opList.Count;i++)
+            for (int i = 0; i < opList.Count; i++)
             {
-                switch(opList[i])
+                switch (opList[i])
                 {
-                    case '+': result += numList[i +1]; 
+                    case '+':
+                        result += numList[i + 1];
                         break;
                     case '-':
                         result -= numList[i + 1];
@@ -90,14 +92,14 @@ namespace Calc2
                             return "Error. Divide by zero attempted.";
                         }
                         break;
-                        default:
+                    default:
                         break;
                 }
             }
             return FormatResult(stringList, result);
 
 
-        }//This method does the calculations and returns the result as a string
+        }// This method does the calculations and returns the result as a string
         static void DisplayResultHistory(List<string> list)
         {
             Console.Clear();
@@ -108,11 +110,11 @@ namespace Calc2
             else
             {
                 Console.WriteLine("This is your recent history:\n");
-                
+
                 foreach (string s in list)
                 {
                     WriteWithColor(s, ConsoleColor.Blue);
-                }                
+                }
             }
 
             WriteWithColor("\n\nPress any key to return to the menu..", ConsoleColor.Yellow);
@@ -132,7 +134,7 @@ namespace Calc2
             return resultString;
         }
         static char[] GetUserInput()
-        {           
+        {
             Console.Clear();
             //Ask user for a problem to calculate
             Console.Write("Enter problem to calculate: ");
@@ -149,16 +151,16 @@ namespace Calc2
         {
             //List to hold numbers and operators in the right order (N OP N OP N OP N etc)
             List<string> list = new List<string>();
-            
+
             //List of valid numbers
             char[] numbers = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-            
+
             //List of valid operators
             char[] op = { '+', '-', '*', '/' };
-            
+
             //Since we are working with a char array we will build our numbers in this string variable
             string numString = "";
-            
+
             //Now we will form a list of numbers and operators.
             foreach (char c in charArray)
             {
@@ -181,14 +183,14 @@ namespace Calc2
                 else if (op.Contains(c))
                 {
                     //I added this if-statement to make sure empty strings wasnt being added to the list if user entered something like 4//4.
-                    if(numString !=String.Empty)list.Add(numString);
-                    
+                    if (numString != String.Empty) list.Add(numString);
+
                     numString = string.Empty;
                     list.Add(c.ToString());
                 }
                 else
                 //If something is wrong with the input, display this message. Also sets the list to empty and return.
-                {                    
+                {
                     list.Clear();
                     return list;
                 }
@@ -237,18 +239,18 @@ namespace Calc2
             Console.ForegroundColor = ConsoleColor.Gray;
 
         } //Writes a line with given color
-        
+
         //------------------------------------------
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
-            
+
             //We will be saving every calculation as a string eg. 1 + 2 + 3 = 6
             List<string> calcHistory = new();
             //This list is used to store the numbers and operators of the current calculation.
             List<string> currentCalculation = new();
             Welcome();
-            Console.ReadKey();
+            Console.ReadKey(true);
 
             //The program will keep running until the user decides to exit the program.
             while (true)
@@ -259,26 +261,26 @@ namespace Calc2
                 var keyPress = Console.ReadKey(true);
 
                 switch (keyPress.Key)
-                {                    
+                {
                     case ConsoleKey.D1:
                         //This bool will be be false until we get a valid calculation.                        
                         bool validResult = false;
-                        
+
                         //The program will keep asking for valid input if user enter something that is not valid.
                         while (!validResult)
                         {
-                            //Clear the list from previous calculation
+                            // Clear the list from previous calculation
                             currentCalculation.Clear();
 
                             //Creating a string to store the entire calcultion + result in.
                             string resultString = "";
-                            
+
                             //Save the user input as an array of type char.
                             char[] inputArray = GetUserInput();
 
                             //Convert inputArray to a list of valid numbers and operators
                             currentCalculation = InputToList(inputArray);
-                            
+
                             //Call "Calculate" with the list of numbers and operators. Store the result in resultString.
                             resultString = Calculate(currentCalculation);
 
@@ -301,14 +303,19 @@ namespace Calc2
                         WriteWithColor("\n\nPress any key to continue..", ConsoleColor.Yellow);
                         Console.ReadKey();
                         break;
-                        case ConsoleKey.D2: DisplayResultHistory(calcHistory);
-                        break;
-                    case ConsoleKey.D3:
-                        break;
-                    case ConsoleKey.Escape: Environment.Exit(0);
+
+                    case ConsoleKey.D2:
+                        DisplayResultHistory(calcHistory);
                         break;
 
-                }                                               
+                    case ConsoleKey.D3:
+                        break;
+
+                    case ConsoleKey.Escape:
+                        Environment.Exit(0);
+                        break;
+
+                }
             }
         }
     }
