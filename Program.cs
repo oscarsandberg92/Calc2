@@ -24,11 +24,11 @@ namespace Calc2
      * [X]Få kontroll över felmeddelande
      * [X]Om historiken är tom, skriv ut tex "You didn't make any calculations yet! 
      * [ ]Snygga till allt visuellt
-     * [ ]Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
+     * [X]Lägga till ett alternativ i main menu, "Info/Future improvements". Ge instruktion om bla att använda * & / innan + & -
      * [X] Gör en välkomstsida
-     * [ ]Mellanslag mellan // och kommentar
-     * [ ]Fixa så att kommat försvinner om man tex skriver 1, + 2
-     * [ ]Kolla om numpadden funkar i menyn
+     * [X]Mellanslag mellan // och kommentar
+     * [X]Fixa så att kommat försvinner om man tex skriver 1, + 2
+     * [X]Kolla om numpadden funkar i menyn
      * [ ]Git från kommandoraden, kika på det!
      */
     internal class Program
@@ -37,13 +37,13 @@ namespace Calc2
 
         static string Calculate(List<string> stringList)
         {
-            //List of numbers
+            // List of numbers
             List<decimal> numList = new();
 
-            //List of operators
+            // List of operators
             List<char> opList = new();
 
-            //Converts the numbers in stringList to doubles, and operators to chars
+            // Converts the numbers in stringList to doubles, and operators to chars
             foreach (string s in stringList)
             {
 
@@ -61,14 +61,13 @@ namespace Calc2
                 }
             }
 
-            //Return "Invalid input" if for some reason numList.Count == opList.Count + are not true.
-
+            // Return "Invalid input" if for some reason numList.Count == opList.Count + 1 are not true.
             if (numList.Count != opList.Count + 1) return "Error. Invalid input.";
             
-            //Setting the result to the first number of numList
+            // Setting the result to the first number of numList
             decimal result = numList[0];
 
-            //Looping through the operators list and performing calculations based on operator
+            // Looping through the operators list and performing calculations based on operator
             for (int i = 0; i < opList.Count; i++)
             {
                 switch (opList[i])
@@ -119,16 +118,25 @@ namespace Calc2
 
             WriteWithColor("\n\nPress any key to return to the menu..", ConsoleColor.Yellow);
             Console.ReadKey(true);
-        }//Displays  calculation history
-        static string FormatResult(List<string> list, decimal result)//Formatting the result string
+        }// Displays  calculation history
+        static void ExitProgram() // Shuts down the program and prints a thank you msg to the user
+        {
+            Console.Clear();
+            WriteWithColor("Thank you for using MyCalc!", ConsoleColor.Yellow);
+            WriteWithColor("Press any key to exit..", ConsoleColor.DarkGray);
+            Console.ReadKey(true);
+            Environment.Exit(0);
+
+        }
+        static string FormatResult(List<string> list, decimal result)// Formatting the result string
         {
             string resultString = "";
-            //Add every number and operator from the list, separated with a space
+            // Add every number and operator from the list, separated with a space
             foreach (string str in list)
-            {
+            {                
                 resultString += str + " ";
             }
-            //After everything in the list is added, end with "=" and the result.
+            // After everything in the list is added, end with "=" and the result.
             resultString += $"= {result}";
 
             return resultString;
@@ -136,70 +144,84 @@ namespace Calc2
         static char[] GetUserInput()
         {
             Console.Clear();
-            //Ask user for a problem to calculate
+            // Ask user for a problem to calculate
             Console.Write("Enter problem to calculate: ");
             string input = Console.ReadLine();
 
-            //Removing potential spaces and replacing dots with commas.
+            // Removing potential spaces and replacing dots with commas.
             input = input.Replace(" ", "").Replace(".", ",");
 
             char[] charArray = input.ToCharArray();
 
             return charArray;
-        }//Takes input from the user and returns it as a char[]. Also removes possible space and replace dots with commas
+        }// Takes input from the user and returns it as a char[]. Also removes possible space and replace dots with commas
+        static void Instructions() // Displays instructions
+        {
+            Console.Clear();
+            WriteWithColor("   Instructions:\n", ConsoleColor.White);
+            Console.WriteLine("1. To calculate, enter your numbers and operator(s) on a single line and then press Enter.\n");
+            Console.WriteLine("2. The calculator supports multiple numbers and operators, but in the current state\n" +
+                              "   it doesn't handle operator precedence. If you want to enter for example 5+5*5\n" +
+                              "   you would need to move the * operator to the front to get a correct result.\n" +
+                              "   This also applies to division. This will be fixed when I have the knowledge to do it.\n\n" +
+                              "3. The calculator handles all the basic operators(+, -, *, /). It also handles negative\n" +
+                              "   and decimal values.\n\n");
+            WriteWithColor("   Press any key to contiune..", ConsoleColor.Yellow);
+            Console.ReadKey(true);
+        }
         static List<string> InputToList(char[] charArray)
         {
-            //List to hold numbers and operators in the right order (N OP N OP N OP N etc)
+            // List to hold numbers and operators in the right order (N OP N OP N OP N etc)
             List<string> list = new List<string>();
 
-            //List of valid numbers
+            // List of valid numbers
             char[] numbers = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-            //List of valid operators
+            // List of valid operators
             char[] op = { '+', '-', '*', '/' };
 
-            //Since we are working with a char array we will build our numbers in this string variable
+            // Since we are working with a char array we will build our numbers in this string variable
             string numString = "";
 
-            //Now we will form a list of numbers and operators.
+            // Now we will form a list of numbers and operators.
             foreach (char c in charArray)
             {
-                //If numString is empty, it's possible to start the string with a '-' or '+'. (Negative/positive indicators)
+                // If numString is empty, it's possible to start the string with a '-' or '+'. (Negative/positive indicators)
                 if (numString == string.Empty && (c == '-' || c == '+'))
                 {
                     numString += c;
                 }
-                //If the string is NOT empty, we can add a comma
+                // If the string is NOT empty, we can add a comma
                 else if (c == ',' && numString != string.Empty)
                 {
                     numString += c;
                 }
-                //If c is a number, add it to num.
+                // If c is a number, add it to num.
                 else if (numbers.Contains(c))
                 {
                     numString += c;
                 }
-                //If c is an operator, add current num to list, reset num back to empty, and add the operator to list.
+                // If c is an operator, add current num to list, reset num back to empty, and add the operator to list.
                 else if (op.Contains(c))
                 {
-                    //I added this if-statement to make sure empty strings wasnt being added to the list if user entered something like 4//4.
+                    // I added this if-statement to make sure empty strings wasnt being added to the list if user entered something like 4//4.
                     if (numString != String.Empty) list.Add(numString);
 
                     numString = string.Empty;
                     list.Add(c.ToString());
                 }
                 else
-                //If something is wrong with the input, display this message. Also sets the list to empty and return.
+                // If something is wrong with the input, display this message. Also sets the list to empty and return.
                 {
                     list.Clear();
                     return list;
                 }
             }
-            //Adds the last number to the list.
-            list.Add(numString);
+            // Adds the last number to the list (unless it's empty)
+            if (numString!= string.Empty) list.Add(numString);
 
             return list;
-        }//This method takes the input as a char[] and converts it to a
+        }// This method takes the input as a char[] and converts it to a
          //list of numbers and operators        
         static void PrintMainMenu()
         {
@@ -207,11 +229,12 @@ namespace Calc2
                               "---------------------------\n" +
                               "Calculate          Press 1\n" +
                               "Show history       Press 2\n" +
+                              "Instructions       Press 3\n" +
                               "\n" +
                               "----------------------------\n");
             WriteWithColor("Exit program       Press ESC", ConsoleColor.DarkGray);
 
-        }//Prints the main menu
+        }// Prints the main menu
         static void Welcome()
         {
 
@@ -231,67 +254,67 @@ namespace Calc2
             WriteWithColor("Welcome to MyCalc!\nThis is a calculator made by: Oscar Sandberg.", ConsoleColor.White);
             WriteWithColor("Press any key to continue...", ConsoleColor.Yellow);
 
-        }//Welcome message
+        }// Welcome message
         static void WriteWithColor(string text, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.WriteLine(text);
             Console.ForegroundColor = ConsoleColor.Gray;
 
-        } //Writes a line with given color
+        } // Writes a line with given color
 
         //------------------------------------------
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
 
-            //We will be saving every calculation as a string eg. 1 + 2 + 3 = 6
+            // We will be saving every calculation as a string eg. 1 + 2 + 3 = 6
             List<string> calcHistory = new();
-            //This list is used to store the numbers and operators of the current calculation.
+            // This list is used to store the numbers and operators of the current calculation.
             List<string> currentCalculation = new();
             Welcome();
             Console.ReadKey(true);
 
-            //The program will keep running until the user decides to exit the program.
+            // The program will keep running until the user decides to exit the program.
             while (true)
             {
                 Console.Clear();
                 PrintMainMenu();
-                //This var is used to keep track if the users menu choice
+                // This var is used to keep track if the users menu choice
                 var keyPress = Console.ReadKey(true);
 
                 switch (keyPress.Key)
                 {
                     case ConsoleKey.D1:
-                        //This bool will be be false until we get a valid calculation.                        
+                        // This bool will be be false until we get a valid calculation.                        
                         bool validResult = false;
 
-                        //The program will keep asking for valid input if user enter something that is not valid.
+                        // The program will keep asking for valid input if user enter something that is not valid.
                         while (!validResult)
                         {
                             // Clear the list from previous calculation
                             currentCalculation.Clear();
 
-                            //Creating a string to store the entire calcultion + result in.
+                            // Creating a string to store the entire calcultion + result in.
                             string resultString = "";
 
-                            //Save the user input as an array of type char.
+                            // Save the user input as an array of type char.
                             char[] inputArray = GetUserInput();
 
-                            //Convert inputArray to a list of valid numbers and operators
+                            // Convert inputArray to a list of valid numbers and operators
                             currentCalculation = InputToList(inputArray);
 
-                            //Call "Calculate" with the list of numbers and operators. Store the result in resultString.
+                            // Call "Calculate" with the list of numbers and operators. Store the result in resultString.
                             resultString = Calculate(currentCalculation);
 
-                            //If resulstring does not contain "Error", we add it to calcHistory and break out of this loop.
+                            // If resulstring does not contain "Error", we add it to calcHistory and break out of this loop.
                             if (!resultString.Contains("Error"))
                             {
                                 WriteWithColor(resultString, ConsoleColor.Gray);
                                 calcHistory.Add(resultString);
                                 validResult = true;
                             }
-                            //If resultString contain "Error", we run this loop again.
+                            // If resultString contain "Error", we run this loop again.
                             else
                             {
                                 WriteWithColor(resultString, ConsoleColor.Red);
@@ -309,10 +332,11 @@ namespace Calc2
                         break;
 
                     case ConsoleKey.D3:
+                        Instructions();
                         break;
 
                     case ConsoleKey.Escape:
-                        Environment.Exit(0);
+                        ExitProgram();
                         break;
 
                 }
